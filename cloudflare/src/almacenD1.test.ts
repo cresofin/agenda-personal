@@ -295,7 +295,7 @@ test("con ADMIN_CHAT_ID el Worker es privado: solo entran el administrador y qui
     await enviar(99, "/start"); await e.esperar();
     const almacen = new AlmacenD1(e.env.DB);
     assert.equal(!!(await almacen.getUsuario("99")), !privado); // abierto: se registra; privado: nada
-    assert.match(e.canal.textos("99").join("\n"), privado ? /Bot privado/ : /Soy tu agenda personal/);
+    assert.match(e.canal.textos("99").join("\n"), privado ? /Bot privado/ : /Soy NeXora/);
     await enviar(42, "/start"); await e.esperar();
     assert.ok(await almacen.getUsuario("42")); assert.equal((await almacen.getAcceso("42"))?.rol, privado ? "admin" : undefined);
   }

@@ -25,18 +25,19 @@ const SIGUIENTE = (txt = "Siguiente ➡️", d = "o:sig") => ({ texto: txt, dato
 
 export async function iniciar(c: Ctx): Promise<void> {
   await c.esperar(FLUJO, "inicio", { secciones: ["noticias", "agenda", "mercados", "tiempo"], temas: [], extra: [] });
-  await c.nuevo(
-    [
-      cabecera("👋", "¡Hola! Soy tu agenda personal", "Te ayudo a no olvidar nada"),
-      "",
-      bloque("📬", "Cada día, a tu hora", "⛅ el tiempo · 📰 noticias · 🔮 horóscopo · 📈 bolsa"),
-      "",
-      bloque("⏰", "Y te aviso de", "tus alarmas, citas y tareas"),
-      "",
-      "<i>Te haré unas preguntas rápidas para personalizarlo. Todo es opcional 👇</i>",
-    ].join("\n"),
-    [[{ texto: "🚀 Empezar", datos: "o:sig" }], [OMITIR_TODO]],
-  );
+  const bienvenida = [
+    cabecera("👋", "¡Hola! Soy NeXora", "Te ayudo a no olvidar nada"),
+    "",
+    bloque("📬", "Cada día, a tu hora", "⛅ el tiempo · 📰 noticias · 🔮 horóscopo · 📈 bolsa"),
+    "",
+    bloque("⏰", "Y te aviso de", "tus alarmas, citas y tareas"),
+    "",
+    "<i>Te haré unas preguntas rápidas para personalizarlo. Todo es opcional 👇</i>",
+  ].join("\n");
+  const teclado: Teclado = [[{ texto: "🚀 Empezar", datos: "o:sig" }], [OMITIR_TODO]];
+  const urlLogo = c.deps.urlBase && `${c.deps.urlBase.replace(/\/+$/, "")}/app/icon-nexora-512.png?v=20261014`;
+  if (urlLogo && c.deps.canal.enviarFoto) await c.deps.canal.enviarFoto(c.u.id, urlLogo, bienvenida, teclado);
+  else await c.nuevo(bienvenida, teclado);
 }
 
 function tecladoIntereses(d: Datos): Teclado {

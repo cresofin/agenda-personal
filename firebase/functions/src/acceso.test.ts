@@ -15,7 +15,7 @@ test("sin administrador configurado el bot sigue abierto (y /miid funciona para 
   const b = crearBanco();
   await b.escribir(AMIGA, "/miid"); assert.match(texto(b, AMIGA), new RegExp(`<code>${AMIGA}</code>`));
   assert.equal(await b.almacen.getUsuario(AMIGA), null); // /miid no registra a nadie
-  await b.escribir(AMIGA, "/start"); assert.match(texto(b, AMIGA), /Soy tu agenda personal/); // abierto: cualquiera entra
+  await b.escribir(AMIGA, "/start"); assert.match(texto(b, AMIGA), /Soy NeXora/); // abierto: cualquiera entra
   await b.escribir(AMIGA, "/invitar"); assert.doesNotMatch(texto(b, AMIGA), /Invitación creada/); // los comandos de administrador no existen sin administrador
 });
 
@@ -75,7 +75,7 @@ test("aprobar: se envía una invitación personal con enlace; solo vale para esa
   // la destinataria entra
   await b.escribir(AMIGA, `/start inv_${codigo}`, "Ana");
   assert.equal((await b.almacen.getAcceso(AMIGA))!.rol, "usuario");
-  assert.match(texto(b, AMIGA), /Soy tu agenda personal/); // y empieza el asistente
+  assert.match(texto(b, AMIGA), /Soy NeXora/); // y empieza el asistente
   assert.match(b.canal.ultimo(ADMIN)!.html, /Ana[\s\S]*ha entrado con una invitación/);
   // y la invitación ya no sirve
   await b.almacen.borrarAcceso(AMIGA);

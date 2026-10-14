@@ -32,9 +32,18 @@ async function usuarioListo(b = crearBanco(AHORA)): Promise<Banco> {
 test("/start inicia el asistente con la bienvenida y la opción de omitir", async () => {
   const b = crearBanco(AHORA);
   await b.escribir(U, "/start");
-  assert.match(textoUltimo(b), /Soy tu agenda personal/);
+  assert.match(textoUltimo(b), /Soy NeXora/);
+  assert.equal(fotos(b).length, 0); // sin dirección pública, la bienvenida sigue siendo texto
   assert.deepEqual(b.canal.botones(U).map((x) => x.datos), ["o:sig", "o:omitir"]);
   assert.equal((await b.almacen.getUsuario(U))!.onboardingHecho, false);
+});
+
+test("la bienvenida muestra el logo de NeXora cuando hay una dirección pública", async () => {
+  const b = crearBanco(AHORA);
+  b.deps.urlBase = "https://agenda.test";
+  await b.escribir(U, "/start");
+  assert.match(textoUltimo(b), /Soy NeXora/);
+  assert.equal(b.canal.ultimo(U).foto, "https://agenda.test/app/icon-nexora-512.png?v=20261014");
 });
 
 test("asistente completo: intereses, aficiones, nombre, nacimiento y ciudad → secciones programadas", async () => {
@@ -138,10 +147,10 @@ test("el asistente tolera una ciudad que no existe, un fallo de red y 'ninguna'"
 test("cualquier mensaje de un usuario nuevo inicia el asistente; un botón antiguo también", async () => {
   const b = crearBanco(AHORA);
   await b.escribir("7", "hola");
-  assert.match(b.canal.ultimo("7").html, /Soy tu agenda personal/);
+  assert.match(b.canal.ultimo("7").html, /Soy NeXora/);
   const c = crearBanco(AHORA);
   await c.pulsar("8", "e:lista");
-  assert.match(c.canal.ultimo("8").html, /Soy tu agenda personal/);
+  assert.match(c.canal.ultimo("8").html, /Soy NeXora/);
 });
 
 // =============== Menús y resúmenes ===============
@@ -416,7 +425,7 @@ test("borrar mis datos: confirma, elimina todo y deja de programar; /start vuelv
   await b.pulsar(U, "p:borrar"); await b.pulsar(U, "p:borrarok");
   assert.match(textoUltimo(b), /Datos borrados/);
   assert.equal(await b.almacen.getUsuario(U), null); assert.equal((await evs(b)).length, 0); assert.equal(b.almacen.programaciones.size, 0);
-  await b.escribir(U, "/start"); assert.match(textoUltimo(b), /Soy tu agenda personal/);
+  await b.escribir(U, "/start"); assert.match(textoUltimo(b), /Soy NeXora/);
 });
 
 // =============== Robustez ===============
@@ -654,9 +663,9 @@ test("apariencia: se cambia en el perfil, se marca la opción elegida y el menú
 test("asistente: pregunta estilo y modo con ejemplos (si hay imágenes); omitir deja informal y claro", async () => {
   const b = crearBanco(AHORA); b.deps.urlBase = BASE;
   await b.escribir(U, "/start");
-  assert.equal(fotos(b).length, 0); // la bienvenida no lleva imágenes
+  assert.deepEqual(fotos(b).map((m) => m.foto), [`${BASE}/app/icon-nexora-512.png?v=20261014`]);
   await b.pulsarTexto(U, "Empezar");
-  assert.deepEqual(fotos(b).map((m) => m.foto), [`${BASE}/menu-informal-claro.png`, `${BASE}/menu-formal-claro.png`]); // un ejemplo de cada estilo
+  assert.deepEqual(fotos(b).map((m) => m.foto), [`${BASE}/app/icon-nexora-512.png?v=20261014`, `${BASE}/menu-informal-claro.png`, `${BASE}/menu-formal-claro.png`]); // logo y un ejemplo de cada estilo
   assert.match(textoUltimo(b), /¿Qué estilo prefieres\?/); assert.match(textoUltimo(b), /Paso 1 de 9/);
   b.canal.limpiar(); await b.pulsar(U, "o:est:formal");
   assert.deepEqual(fotos(b).map((m) => m.foto), [`${BASE}/menu-formal-claro.png`, `${BASE}/menu-formal-oscuro.png`]); // y de cada modo, en el estilo elegido

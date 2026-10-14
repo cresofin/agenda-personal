@@ -22,7 +22,7 @@ test("webhook: solo acepta POST con el secreto correcto", async () => {
 test("webhook: una actualización válida llega al bot y se responde 200", async () => {
   const b = crearBanco();
   assert.deepEqual(await llamar(b), { estado: 200, texto: "ok" });
-  assert.match(b.canal.ultimo("7").html, /Soy tu agenda personal/);
+  assert.match(b.canal.ultimo("7").html, /Soy NeXora/);
   assert.ok(await b.almacen.getUsuario("7"));
 });
 
