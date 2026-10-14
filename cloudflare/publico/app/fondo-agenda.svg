@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
+<defs>
+  <pattern id="p" width="160" height="160" patternUnits="userSpaceOnUse">
+    <rect width="160" height="160" fill="#eef5fd"/>
+    <g fill="none" stroke="#245fae" stroke-width="2.5" opacity=".34" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="7" y="8" width="22" height="19" rx="3"/><path d="M7 14h22M12 5v6M24 5v6M12 20h3M19 20h3"/>
+      <circle cx="55" cy="17" r="10"/><path d="M55 11v7l5 3"/>
+      <path d="M82 8l4 4 8-9"/><path d="M105 7h22v17h-22zM105 13h22"/>
+      <path d="M138 8v19M132 14h12M134 20h8"/>
+      <path d="M8 43h30M8 50h23M8 57h27M8 40l4-4 4 4"/>
+      <path d="M55 39h17a3 3 0 0 1 3 3v19a3 3 0 0 1-3 3H55a3 3 0 0 1-3-3V42a3 3 0 0 1 3-3z"/><path d="M58 35v7M69 35v7M52 47h23M58 53l3 3 6-7"/>
+      <circle cx="103" cy="49" r="11"/><path d="M103 42v8l5 3"/>
+      <path d="M130 40c0-5 4-9 8-9s8 4 8 9v5l3 4h-22l3-4zM136 52h4"/>
+      <path d="M12 82c0-6 4-10 9-12 5 2 9 6 9 12"/><path d="M16 82v4h10v-4"/>
+      <path d="M50 78l5 5 10-11"/><path d="M82 73h24v21H82zM82 80h24"/>
+      <path d="M119 73h18v18h-18zM123 69v8M133 69v8M119 79h18"/>
+      <path d="M145 67l4 4 6-7"/>
+      <path d="M7 111h17l3 16h20l4-12H29"/><circle cx="34" cy="132" r="2"/><circle cx="47" cy="132" r="2"/>
+      <path d="M67 108h27M67 115h21M67 122h24"/><circle cx="59" cy="115" r="7"/>
+      <path d="M110 105c0 5 4 8 9 8s9-3 9-8M119 113v14M111 127h16"/>
+      <path d="M143 108l4 4 7-8"/>
+      <path d="M9 147c5-7 11-7 16 0 5-7 11-7 16 0"/><path d="M52 141h18v14H52z"/>
+      <circle cx="91" cy="149" r="10"/><path d="M87 149l3 3 6-7"/>
+      <path d="M116 140h25v17h-25zM116 146h25"/>
+      <path d="M150 139v18M144 145h12"/>
+    </g>
+    <g fill="none" stroke="#1976d2" stroke-width="2.1" opacity=".28" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M39 29l3 3 6-7"/><path d="M30 71l5-5 5 5"/><path d="M115 30l4-5 4 5"/>
+      <path d="M41 100h12M47 94v12"/><path d="M101 68l5 5 8-10"/><path d="M138 97l5-5 5 5"/>
+      <circle cx="32" cy="119" r="5"/><path d="M74 132h10M79 127v10"/><path d="M104 138l4 4 7-8"/>
+    </g>
+  </pattern>
+</defs>
+<rect width="320" height="320" fill="url(#p)"/>
+</svg>

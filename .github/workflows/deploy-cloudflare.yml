@@ -1,0 +1,69 @@
+name: Desplegar en Cloudflare
+
+# Cada vez que se sube un cambio al bot (código del Worker o lógica común) se prueba y se despliega solo.
+# Disparo manual de mantenimiento para publicar los cambios pendientes de la webapp/PWA.
+on:
+  push:
+    branches: [main, claude/android-notifications-app-pxj3sn]
+    paths:
+      - "cloudflare/**"
+      - "firebase/functions/src/**"
+      - ".github/workflows/deploy-cloudflare.yml"
+  workflow_dispatch: # también se puede lanzar a mano desde la pestaña Actions
+
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: false # un despliegue en curso termina antes de empezar el siguiente
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cloudflare
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            cloudflare/package-lock.json
+            firebase/functions/package-lock.json
+      - run: npm ci
+      - name: Tests del Worker
+        run: npm test
+      - name: Comprobar JavaScript de la webapp
+        run: |
+          node - <<'NODE'
+          const fs = require("fs");
+          const html = fs.readFileSync("publico/app/index.html", "utf8");
+          const scripts = html.split("<script").slice(1).map((x) => x.slice(x.indexOf(">") + 1).split("</script>")[0]).filter((s) => s.trim());
+          if (!scripts.length) throw new Error("No se encontró JavaScript inline en index.html");
+          for (let i = 0; i < scripts.length; i++) fs.writeFileSync("/tmp/agenda-web-" + i + ".js", scripts[i]);
+          console.log("Comprobando", scripts.length, "bloques JavaScript");
+          NODE
+          for f in /tmp/agenda-web-*.js; do node --check "$f"; done
+          if grep -q 'data-actualizar="\${esc(S.ver.ref)}"' publico/app/index.html; then echo "::error::El panel del tiempo depende de S.ver.ref"; exit 1; fi
+      - name: Tests de la lógica común (bot, secciones, planificador)
+        working-directory: firebase/functions
+        run: |
+          npm ci
+          npm test
+      - name: Empaquetar el Worker desde el código
+        run: npm run empaquetar
+      - name: Comprobar credenciales de Cloudflare
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::No se puede desplegar: faltan CLOUDFLARE_API_TOKEN y/o CLOUDFLARE_ACCOUNT_ID en Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+      - name: Verificar acceso a la cuenta de Cloudflare
+        run: npx wrangler whoami
+      - name: Crear las tablas que falten en D1 (es idempotente)
+        run: npx wrangler d1 execute agenda-personal --remote --file=schema.sql
+      - name: Desplegar en producción
+        run: npx wrangler deploy
